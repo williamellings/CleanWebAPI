@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CleanWebAPI.API/CleanWebAPI.API.csproj" />
+  <Project Path="CleanWebAPI.Application/CleanWebAPI.Application.csproj" />
+  <Project Path="CleanWebAPI.Domain/CleanWebAPI.Domain.csproj" />
+  <Project Path="CleanWebAPI.Infrastructure/CleanWebAPI.Infrastructure.csproj" />
+</Solution>
