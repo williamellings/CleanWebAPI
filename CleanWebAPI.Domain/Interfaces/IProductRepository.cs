@@ -9,5 +9,5 @@ public interface IProductRepository
     Task AddAsync(Product product);
     void Update(Product product);
     void Delete(Product product);
-    Task SaveChangesAsync(); // Viktig för EF Core
+    Task SaveChangesAsync(); 
 }
