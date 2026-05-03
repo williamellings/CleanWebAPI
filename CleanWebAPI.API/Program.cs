@@ -12,6 +12,10 @@ builder.Services.AddControllers();
 // Setting up OpenAPI/Swagger for testing the API
 builder.Services.AddOpenApi();
 
+//MediatR 
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CleanWebAPI.Application.Products.Commands.CreateProductCommand).Assembly));
+
 // Fetch the connection string from appsettings.json and configure SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
