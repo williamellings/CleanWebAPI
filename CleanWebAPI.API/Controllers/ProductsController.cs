@@ -18,10 +18,10 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command)
     {
-        // Enligt steg 2 i "CQRS-flödet" i uppgiften:
+        
         var productId = await _mediator.Send(command);
 
-        // Returnerar HTTP 201 Created
+        // Returns HTTP 201 Created
         return CreatedAtAction(nameof(CreateProduct), new { id = productId }, productId);
     }
 }
