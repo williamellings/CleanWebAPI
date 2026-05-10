@@ -4,6 +4,9 @@ using CleanWebAPI.Application.Common.Mappings;
 using CleanWebAPI.Domain.Interfaces;
 using CleanWebAPI.Infrastructure;
 using CleanWebAPI.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +40,22 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
 
+// JWT Konfiguration
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
 var app = builder.Build();
 
 // Middleware and Request Pipeline
@@ -50,7 +69,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// UseAuthorization is required for the [Authorize] attributes to work later
+// UseAuthorization is required for the [Authorize] attributes to work
+app.UseAuthentication();
 app.UseAuthorization();
 
 // MapControllers allows the API to find the controllers in the Controllers folder

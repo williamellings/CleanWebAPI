@@ -1,6 +1,7 @@
 ﻿using CleanWebAPI.Application.Products.Commands;
 using CleanWebAPI.Application.Products.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanWebAPI.API.Controllers;
@@ -16,30 +17,10 @@ public class ProductsController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command)
-    {
-        
-        var productId = await _mediator.Send(command);
-
-        // Returns HTTP 201 Created
-        return CreatedAtAction(nameof(CreateProduct), new { id = productId }, productId);
-
-
-    }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        await _mediator.Send(new DeleteProductCommand(id));
-        return NoContent(); // Returnerar 204 No Content vid lyckad borttagning
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        // Skickar queryn genom MediatR
         var products = await _mediator.Send(new GetAllProductsQuery());
-
         return Ok(products);
     }
 
@@ -54,13 +35,30 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [HttpPost]
+    [Authorize] // Kräver inloggning, oavsett roll
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductCommand command)
+    {
+        var productId = await _mediator.Send(command);
+        return CreatedAtAction(nameof(CreateProduct), new { id = productId }, productId);
+    }
+
     [HttpPut("{id}")]
+    [Authorize] // Kräver också inloggning
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductCommand command)
     {
         if (id != command.Id)
             return BadRequest("ID i URL:en matchar inte ID:t i bodyn.");
 
         await _mediator.Send(command);
-        return NoContent(); // Returnerar 204 No Content vid lyckad uppdatering
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")] // Kräver inloggning OCH rollen Admin
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteProductCommand(id));
+        return NoContent();
     }
 }
