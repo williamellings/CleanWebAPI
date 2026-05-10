@@ -23,5 +23,13 @@ public class ProductsController : ControllerBase
 
         // Returns HTTP 201 Created
         return CreatedAtAction(nameof(CreateProduct), new { id = productId }, productId);
+
+
+    }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteProductCommand(id));
+        return NoContent(); // Returnerar 204 No Content vid lyckad borttagning
     }
 }
