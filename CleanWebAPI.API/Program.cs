@@ -1,8 +1,10 @@
 using CleanWebAPI.Domain.Interfaces;
 using CleanWebAPI.Infrastructure;
 using CleanWebAPI.Infrastructure.Repositories;
+using CleanWebAPI.Application.Common.Mappings;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // MediatR and AutoMapper registrations
+
+builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
 
 var app = builder.Build();
 

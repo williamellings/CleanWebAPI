@@ -1,4 +1,5 @@
 ﻿using CleanWebAPI.Application.Products.Commands;
+using CleanWebAPI.Application.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,5 +32,14 @@ public class ProductsController : ControllerBase
     {
         await _mediator.Send(new DeleteProductCommand(id));
         return NoContent(); // Returnerar 204 No Content vid lyckad borttagning
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        // Skickar queryn genom MediatR
+        var products = await _mediator.Send(new GetAllProductsQuery());
+
+        return Ok(products);
     }
 }
