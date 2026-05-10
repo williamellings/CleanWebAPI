@@ -1,33 +1,30 @@
-﻿using CleanWebAPI.Application.Products.Commands;
-using CleanWebAPI.Domain.Entities;
+﻿using AutoMapper;
+using CleanWebAPI.Application.DTOs;
+using CleanWebAPI.Application.Products.Queries;
 using CleanWebAPI.Domain.Interfaces;
 using MediatR;
 
 namespace CleanWebAPI.Application.Products.Handlers;
 
-public class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
+public class GetAllProductsHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<ProductDto>>
 {
-    private readonly IProductRepository _repository;
+    private readonly IProductRepository _productRepository;
+    private readonly IMapper _mapper;
 
-    public CreateProductHandler(IProductRepository repository)
+    public GetAllProductsHandler(IProductRepository productRepository, IMapper mapper)
     {
-        _repository = repository;
+        _productRepository = productRepository;
+        _mapper = mapper;
     }
 
-    public async Task<Guid> Handle(CreateProductCommand request,CancellationToken cancellationToken)
+    public async Task<IEnumerable<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
-        var product = new Product
-        {
-            Id = Guid.NewGuid(),
-            Name = request.Name,
-            Description = request.Description,
-            Price = request.Price,
-            CategoryId = request.CategoryId
-        };
+        
+        var products = await _productRepository.GetAllAsync();
 
-        await _repository.AddAsync(product);
-        await _repository.SaveChangesAsync();
+        
+        var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
 
-        return product.Id;
+        return productDtos;
     }
 }

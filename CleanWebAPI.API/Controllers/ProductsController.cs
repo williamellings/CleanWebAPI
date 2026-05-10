@@ -1,4 +1,5 @@
 ﻿using CleanWebAPI.Application.Products.Commands;
+using CleanWebAPI.Application.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,5 +24,14 @@ public class ProductsController : ControllerBase
 
         // Returns HTTP 201 Created
         return CreatedAtAction(nameof(CreateProduct), new { id = productId }, productId);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        // Skickar queryn genom MediatR
+        var products = await _mediator.Send(new GetAllProductsQuery());
+
+        return Ok(products);
     }
 }
