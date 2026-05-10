@@ -1,16 +1,21 @@
+using AutoMapper;
+using CleanWebAPI.Application.Common.Behaviors;
+using CleanWebAPI.Application.Common.Mappings;
 using CleanWebAPI.Domain.Interfaces;
 using CleanWebAPI.Infrastructure;
 using CleanWebAPI.Infrastructure.Repositories;
-using CleanWebAPI.Application.Common.Mappings;
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Services and Dependency Injection ---
 
 builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssembly(typeof(CleanWebAPI.Application.Products.Commands.CreateProductCommand).Assembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // Setting up OpenAPI/Swagger for testing the API
 builder.Services.AddOpenApi();
